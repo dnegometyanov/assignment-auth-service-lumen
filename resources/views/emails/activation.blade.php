@@ -1,0 +1,1 @@
+{% raw %}<strong>Activation code {{ $activationCode }}</strong>!{% endraw %}

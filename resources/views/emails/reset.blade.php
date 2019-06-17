@@ -1,0 +1,1 @@
+{% raw %}<strong>Reset code {{ $resetCode }}</strong>!{% endraw %}

@@ -40,6 +40,9 @@ $router->post(
     ]
 );
 
+// This route is not a part of auth, and is here for testing, in live auth app it should be removed
+// Test route protected by token
+// Token is passed as https parameter, but not as bearer header
 $router->group(
     ['middleware' => 'jwt.auth'],
     function () use ($router) {

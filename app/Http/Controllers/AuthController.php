@@ -118,7 +118,7 @@ class AuthController extends BaseController
         try {
             $user = $this->authService->reset($email);
 
-            return response()->json($user, 200);
+            return response()->json(['success' => true], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),

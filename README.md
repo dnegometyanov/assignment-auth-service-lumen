@@ -19,10 +19,10 @@
  - For simplification purposes I've used synchronous mailing
  - For simplification purposes I've stored activation / reset code data in User model
  - I've used this article as a starter https://medium.com/tech-tajawal/jwt-authentication-for-lumen-5-6-2376fd38d454
- - Would be good to cover AuthController actions with functional tests, however I was short on time for that :(
  
 ### Usage
  - Create 2 databases for project and for tests (for example `cordial` and `cordial_test`)
+ - Copy `.env.example` to `.env` and `.env.testing.example` to `.env.testing` and set up parameters
  - Migrate both of them `php artisan migrate` and `php artisan migrate --env="testing"`
  - Use `./vendor/bin/phpunit` to run unit tests (`AuthService` is covered)
  - Exported Postman collection is in `Cordial-Auth-App.postman_collection.json`

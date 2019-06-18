@@ -10,8 +10,13 @@ use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
-class AuthService
+class AuthService implements AuthServiceInterface
 {
+    /**
+     * @inheritdoc
+     *
+     * @throws \Exception
+     */
     public function register(string $name, string $email, string $password): User
     {
         $existingUser = User::where('email', $email)->first();
@@ -29,17 +34,24 @@ class AuthService
         $activationCode = rand(1000, 9999);
         $user->activationCode = password_hash($activationCode, PASSWORD_BCRYPT);
 
-        Mail::send(
-            new Activation(
-                $user->email,
-                $activationCode)
-        );
+        // Test task implementation uses synchronous mailer for simplification
+        Mail::to($user->email)
+            ->send(
+                new Activation(
+                    $user->email,
+                    $activationCode)
+            );
 
         $user->save();
 
         return $user;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @throws \Exception
+     */
     public function activate(string $email, string $activationCode): User
     {
         $user = User::where('email', $email)->first();
@@ -63,6 +75,11 @@ class AuthService
         return $user;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @throws \Exception
+     */
     public function authenticate(string $email, string $password): string
     {
         $user = User::where('email', $email)->first();
@@ -78,6 +95,11 @@ class AuthService
         return $this->jwt($user);
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @throws \Exception
+     */
     public function reset(string $email): User
     {
         // Find the user by email
@@ -94,17 +116,24 @@ class AuthService
             ->addMinute(env('ACTIVATION_CODE_EXPIRATION_PERIOD_MINUTES'))
             ->format('Y-m-d H:i:s');
 
-        Mail::send(
-            new Reset(
-                $user->email,
-                $resetCode)
-        );
+        // Test task implementation uses synchronous mailer for simplification
+        Mail::to($user->email)
+            ->send(
+                new Reset(
+                    $user->email,
+                    $resetCode)
+            );
 
         $user->save();
 
         return $user;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @throws \Exception
+     */
     public function change(string $email, string $resetCode, string $newPassword): User
     {
         // Find the user by email
@@ -130,9 +159,10 @@ class AuthService
     }
 
     /**
-     * Create a new token.
+     * Helper method to create a JWT token.
      *
      * @param  \App\User $user
+     *
      * @return string
      */
     protected function jwt(User $user): string

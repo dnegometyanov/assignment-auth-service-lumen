@@ -1,6 +1,6 @@
 {
     "name": "laravel/lumen",
-    "description": "The Laravel Lumen Framework.",
+    "description": "Cordial Auth Test Task.",
     "keywords": ["framework", "laravel", "lumen"],
     "license": "MIT",
     "type": "project",

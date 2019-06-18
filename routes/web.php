@@ -1,5 +1,6 @@
 <?php
 
+// Login uses email / password
 $router->post(
     'auth/login',
     [
@@ -7,6 +8,7 @@ $router->post(
     ]
 );
 
+// Activate should be available without checking token or credentials, it can register user with non existing email
 $router->post(
     'auth/register',
     [
@@ -14,6 +16,7 @@ $router->post(
     ]
 );
 
+// Activate should be available without checking token or credentials, it uses activation code from email
 $router->post(
     'auth/activate',
     [
@@ -21,6 +24,7 @@ $router->post(
     ]
 );
 
+// Reset should be available without checking token or credentials
 $router->post(
     'auth/reset',
     [
@@ -28,6 +32,7 @@ $router->post(
     ]
 );
 
+// Change should be available without checking token or credentials, it uses reset code from email
 $router->post(
     'auth/change',
     [

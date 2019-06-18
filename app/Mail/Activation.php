@@ -11,7 +11,7 @@ class Activation extends Mailable
     /** @var string the address to send the email */
     protected $toAddress;
 
-    /** @var string the winnings they won */
+    /** @var string activation code */
     protected $activationCode;
 
     /**
@@ -37,7 +37,7 @@ class Activation extends Mailable
     {
         return $this
             ->to($this->toAddress)
-            ->subject('Your auth activated')
+            ->subject('Your auth account is activated.')
             ->view('emails.activation')
             ->with(
                 [

@@ -154,6 +154,8 @@ class AuthTest extends TestCase
      */
     public function testCanReset()
     {
+        Mail::fake();
+
         $user = new User();
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';

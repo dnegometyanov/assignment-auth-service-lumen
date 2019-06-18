@@ -33,7 +33,7 @@ class Activation extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): Activation
     {
         return $this
             ->to($this->toAddress)

@@ -33,7 +33,7 @@ class Reset extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): Reset
     {
         return $this
             ->to($this->toAddress)

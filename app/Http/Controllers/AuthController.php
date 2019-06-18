@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
@@ -36,11 +37,11 @@ class AuthController extends BaseController
     /**
      * Authenticate a user and return the token if the provided credentials are correct.
      *
-     * @return mixed
+     * @return JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate()
+    public function authenticate(): JsonResponse
     {
         $this->validate($this->request, [
             'email' => 'required|email',
@@ -63,7 +64,12 @@ class AuthController extends BaseController
         }
     }
 
-    public function register()
+    /**
+     * @return JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function register(): JsonResponse
     {
         $this->validate($this->request, [
             'name' => 'required',
@@ -86,7 +92,12 @@ class AuthController extends BaseController
         }
     }
 
-    public function activate()
+    /**
+     * @return JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function activate(): JsonResponse
     {
         $this->validate($this->request, [
             'email' => 'required|email',
@@ -107,7 +118,12 @@ class AuthController extends BaseController
         }
     }
 
-    public function reset()
+    /**
+     * @return JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function reset(): JsonResponse
     {
         $this->validate($this->request, [
             'email' => 'required|email',
@@ -126,7 +142,12 @@ class AuthController extends BaseController
         }
     }
 
-    public function change()
+    /**
+     * @return JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function change(): JsonResponse
     {
         $this->validate($this->request, [
             'email' => 'required|email',
@@ -148,5 +169,4 @@ class AuthController extends BaseController
             ], 400);
         }
     }
-
 }

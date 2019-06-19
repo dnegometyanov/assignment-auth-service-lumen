@@ -28,11 +28,11 @@ class AuthService implements AuthServiceInterface
         $user = new User();
         $user->name = $name;
         $user->email = $email;
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = false;
 
         $activationCode = rand(1000, 9999);
-        $user->activationCode = password_hash($activationCode, PASSWORD_BCRYPT);
+        $user->activationCode = Hash::make($activationCode);
 
         // Test task implementation uses synchronous mailer for simplification
         Mail::to($user->email)
@@ -110,7 +110,7 @@ class AuthService implements AuthServiceInterface
         }
 
         $resetCode = rand(100000, 999999);
-        $user->resetCode = password_hash($resetCode, PASSWORD_BCRYPT);
+        $user->resetCode = Hash::make($resetCode);
 
         $user->resetCodeExpiration = Date::now()
             ->addMinute(env('ACTIVATION_CODE_EXPIRATION_PERIOD_MINUTES'))
@@ -151,7 +151,7 @@ class AuthService implements AuthServiceInterface
             throw new \Exception('Reset code is expired.');
         }
 
-        $user->password = password_hash($newPassword, PASSWORD_BCRYPT);
+        $user->password = Hash::make($newPassword);
 
         $user->save();
 

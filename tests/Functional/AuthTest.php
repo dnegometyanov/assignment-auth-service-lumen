@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -60,9 +61,9 @@ class AuthTest extends TestCase
         $user = new User();
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
-        $user->password = password_hash('somepassword', PASSWORD_BCRYPT);
+        $user->password = Hash::make('somepassword');
         $activationCode = '1234';
-        $user->activationCode = password_hash($activationCode, PASSWORD_BCRYPT);
+        $user->activationCode = Hash::make($activationCode);
         $user->active = false;
         $user->save();
 
@@ -86,9 +87,9 @@ class AuthTest extends TestCase
         $user = new User();
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
-        $user->password = password_hash('somepassword', PASSWORD_BCRYPT);
+        $user->password = Hash::make('somepassword');
         $activationCode = '1234';
-        $user->activationCode = password_hash($activationCode, PASSWORD_BCRYPT);
+        $user->activationCode = Hash::make($activationCode);
         $user->active = false;
         $user->save();
 
@@ -112,7 +113,7 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $user->save();
 
@@ -134,7 +135,7 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $user->save();
 
@@ -160,7 +161,7 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $user->save();
 
@@ -181,7 +182,7 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $user->save();
 
@@ -202,10 +203,10 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $resetCode = 'someresetcode';
-        $user->resetCode = password_hash($resetCode, PASSWORD_BCRYPT);
+        $user->resetCode = Hash::make($resetCode);
         $user->resetCodeExpiration = '2100-01-01 00:00:00';
         $user->save();
 
@@ -230,10 +231,10 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $password = 'somepassword';
-        $user->password = password_hash($password, PASSWORD_BCRYPT);
+        $user->password = Hash::make($password);
         $user->active = true;
         $resetCode = 'someresetcode';
-        $user->resetCode = password_hash($resetCode, PASSWORD_BCRYPT);
+        $user->resetCode = Hash::make($resetCode);
         $user->resetCodeExpiration = '2100-01-01 00:00:00';
         $user->save();
 

@@ -9,10 +9,13 @@
 | your database. Just tell the factory how a default model should
 | look.
 */
+
+use Illuminate\Support\Facades\Hash;
+
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name'     => $faker->name,
         'email'    => $faker->unique()->email,
-        'password' =>   password_hash("passwordfortest", PASSWORD_BCRYPT),
+        'password' =>   Hash::make('passwordfortest'),
     ];
 });

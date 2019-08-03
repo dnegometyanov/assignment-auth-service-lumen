@@ -62,7 +62,7 @@ class AuthTest extends TestCase
         $user->name = 'TestUser';
         $user->email = 'TestUser@somedomain.com';
         $user->password = Hash::make('somepassword');
-        $activationCode = '1234';
+        $activationCode = 'some1234';
         $user->activationCode = Hash::make($activationCode);
         $user->active = false;
         $user->save();

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Date;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthService implements AuthServiceInterface
 {
@@ -19,6 +20,23 @@ class AuthService implements AuthServiceInterface
      */
     public function register(string $name, string $email, string $password): User
     {
+        $validator = Validator::make(
+            [
+                'name' => $name,
+                'email' => $email,
+                'password' => $password,
+            ],
+            [
+                'name' => AuthRules::getNameValidationRule(),
+                'email' => AuthRules::getEmailValidationRule(),
+                'password' => AuthRules::getPasswordValidationRule(),
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new \Exception(implode(' ', $validator->errors()->all()));
+        }
+
         $existingUser = User::where('email', $email)->first();
 
         if (null !== $existingUser) {
@@ -31,7 +49,7 @@ class AuthService implements AuthServiceInterface
         $user->password = Hash::make($password);
         $user->active = false;
 
-        $activationCode = rand(1000, 9999);
+        $activationCode = $this->generatePassword();
         $user->activationCode = Hash::make($activationCode);
 
         // Test task implementation uses synchronous mailer for simplification
@@ -54,6 +72,21 @@ class AuthService implements AuthServiceInterface
      */
     public function activate(string $email, string $activationCode): User
     {
+        $validator = Validator::make(
+            [
+                'email' => $email,
+                'activation_code' => $activationCode,
+            ],
+            [
+                'email' => AuthRules::getEmailValidationRule(),
+                'activation_code' => AuthRules::getActivationCodeValidationRule(),
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new \Exception(implode(' ', $validator->errors()->all()));
+        }
+
         $user = User::where('email', $email)->first();
 
         if (!$user) {
@@ -82,14 +115,33 @@ class AuthService implements AuthServiceInterface
      */
     public function authenticate(string $email, string $password): string
     {
+        $validator = Validator::make(
+            [
+                'email' => $email,
+                'password' => $password,
+            ],
+            [
+                'email' => AuthRules::getEmailValidationRule(),
+                'password' => AuthRules::getPasswordValidationRule(),
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new \Exception(implode(' ', $validator->errors()->all()));
+        }
+
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (true == empty($user)) {
             throw new \Exception(sprintf('User with email %s does not exist.', $email));
         }
 
+        if (true !== $user->active) {
+            throw new \Exception(sprintf('User with email %s is not active.', $email));
+        }
+
         if (false === Hash::check($password, $user->password)) {
-            throw new \Exception(sprintf('Password is incorrect.', $email));
+            throw new \Exception(sprintf('Password is incorrect.'));
         }
 
         return $this->jwt($user);
@@ -102,6 +154,19 @@ class AuthService implements AuthServiceInterface
      */
     public function reset(string $email): User
     {
+        $validator = Validator::make(
+            [
+                'email' => $email,
+            ],
+            [
+                'email' => AuthRules::getEmailValidationRule(),
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new \Exception(implode(' ', $validator->errors()->all()));
+        }
+
         // Find the user by email
         $user = User::where('email', $email)->first();
 
@@ -109,7 +174,7 @@ class AuthService implements AuthServiceInterface
             throw new \Exception(sprintf('User with email %s does not exist.', $email));
         }
 
-        $resetCode = rand(100000, 999999);
+        $resetCode = $this->generatePassword();
         $user->resetCode = Hash::make($resetCode);
 
         $user->resetCodeExpiration = Date::now()
@@ -136,6 +201,23 @@ class AuthService implements AuthServiceInterface
      */
     public function change(string $email, string $resetCode, string $newPassword): User
     {
+        $validator = Validator::make(
+            [
+                'email' => $email,
+                'resetCode' => $resetCode,
+                'newPassword' => $newPassword,
+            ],
+            [
+                'email' => AuthRules::getEmailValidationRule(),
+                'resetCode' => AuthRules::getResetCodeValidationRule(),
+                'newPassword' => AuthRules::getPasswordValidationRule(),
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new \Exception(implode(' ', $validator->errors()->all()));
+        }
+
         // Find the user by email
         $user = User::where('email', $email)->first();
 
@@ -175,5 +257,25 @@ class AuthService implements AuthServiceInterface
         ];
 
         return JWT::encode($payload, env('JWT_SECRET'));
+    }
+
+    /**
+     * Generates random password of allowed symbols and range of length
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function generatePassword(): string
+    {
+        $count = mb_strlen(AuthRules::PASSWORD_ALLOWED_CHARS);
+        $length = random_int(AuthRules::PASSWORD_MAX_LENGTH, AuthRules::PASSWORD_MAX_LENGTH);
+
+        for ($i = 0, $password = ''; $i < $length; $i++) {
+            $index = random_int(0, $count - 1);
+            $password .= mb_substr(AuthRules::PASSWORD_ALLOWED_CHARS, $index, 1);
+        }
+
+        return $password;
     }
 }

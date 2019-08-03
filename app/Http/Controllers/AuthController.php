@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuthRules;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,13 +11,6 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 class AuthController extends BaseController
 {
     /**
-     * The request instance.
-     *
-     * @var \Illuminate\Http\Request
-     */
-    private $request;
-
-    /**
      * @var AuthService
      */
     private $authService;
@@ -24,32 +18,31 @@ class AuthController extends BaseController
     /**
      * Create a new controller instance.
      *
-     * @param  \Illuminate\Http\Request $request
-     *
      * @param AuthService $authService
      */
-    public function __construct(Request $request, AuthService $authService)
+    public function __construct(AuthService $authService)
     {
-        $this->request = $request;
         $this->authService = $authService;
     }
 
     /**
      * Authenticate a user and return the token if the provided credentials are correct.
      *
+     * @param Request $request
+     *
      * @return JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): JsonResponse
+    public function authenticate(Request $request): JsonResponse
     {
-        $this->validate($this->request, [
-            'email' => 'required|email',
-            'password' => 'required'
+        $this->validate($request, [
+            'email' => AuthRules::getEmailValidationRule(),
+            'password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $email = $this->request->input('email');
-        $password = $this->request->input('password');
+        $email = $request->input('email');
+        $password = $request->input('password');
 
         try {
             $token = $this->authService->authenticate($email, $password);
@@ -65,21 +58,23 @@ class AuthController extends BaseController
     }
 
     /**
-     * @return JsonResponse
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function register(): JsonResponse
+    public function register(Request $request): JsonResponse
     {
-        $this->validate($this->request, [
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required'
+        $this->validate($request, [
+            'name' => AuthRules::getNameValidationRule(),
+            'email' => AuthRules::getEmailValidationRule(),
+            'password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $name = $this->request->input('name');
-        $email = $this->request->input('email');
-        $password = $this->request->input('password');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $password = $request->input('password');
 
         try {
             $user = $this->authService->register($name, $email, $password);
@@ -93,19 +88,21 @@ class AuthController extends BaseController
     }
 
     /**
-     * @return JsonResponse
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function activate(): JsonResponse
+    public function activate(Request $request): JsonResponse
     {
-        $this->validate($this->request, [
-            'email' => 'required|email',
-            'activation_code' => 'required'
+        $this->validate($request, [
+            'email' => AuthRules::getEmailValidationRule(),
+            'activation_code' => AuthRules::getActivationCodeValidationRule(),
         ]);
 
-        $email = $this->request->input('email');
-        $activationCode = $this->request->input('activation_code');
+        $email = $request->input('email');
+        $activationCode = $request->input('activation_code');
 
         try {
             $user = $this->authService->activate($email, $activationCode);
@@ -119,17 +116,19 @@ class AuthController extends BaseController
     }
 
     /**
-     * @return JsonResponse
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function reset(): JsonResponse
+    public function reset(Request $request): JsonResponse
     {
-        $this->validate($this->request, [
-            'email' => 'required|email',
+        $this->validate($request, [
+            'email' => AuthRules::getEmailValidationRule(),
         ]);
 
-        $email = $this->request->input('email');
+        $email = $request->input('email');
 
         try {
             $user = $this->authService->reset($email);
@@ -143,21 +142,23 @@ class AuthController extends BaseController
     }
 
     /**
-     * @return JsonResponse
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function change(): JsonResponse
+    public function change(Request $request): JsonResponse
     {
-        $this->validate($this->request, [
-            'email' => 'required|email',
-            'reset_code' => 'required',
-            'new_password' => 'required',
+        $this->validate($request, [
+            'email' => AuthRules::getEmailValidationRule(),
+            'reset_code' => AuthRules::getResetCodeValidationRule(),
+            'new_password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $email = $this->request->input('email');
-        $resetCode = $this->request->input('reset_code');
-        $newPassword = $this->request->input('new_password');
+        $email = $request->input('email');
+        $resetCode = $request->input('reset_code');
+        $newPassword = $request->input('new_password');
 
         try {
             $user = $this->authService->change($email, $resetCode, $newPassword);

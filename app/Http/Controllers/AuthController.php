@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Services\AuthRules;
@@ -37,11 +39,11 @@ class AuthController extends BaseController
     public function authenticate(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'email' => AuthRules::getEmailValidationRule(),
+            'email'    => AuthRules::getEmailValidationRule(),
             'password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $email = $request->input('email');
+        $email    = $request->input('email');
         $password = $request->input('password');
 
         try {
@@ -67,13 +69,13 @@ class AuthController extends BaseController
     public function register(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'name' => AuthRules::getNameValidationRule(),
-            'email' => AuthRules::getEmailValidationRule(),
+            'name'     => AuthRules::getNameValidationRule(),
+            'email'    => AuthRules::getEmailValidationRule(),
             'password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $name = $request->input('name');
-        $email = $request->input('email');
+        $name     = $request->input('name');
+        $email    = $request->input('email');
         $password = $request->input('password');
 
         try {
@@ -97,11 +99,11 @@ class AuthController extends BaseController
     public function activate(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'email' => AuthRules::getEmailValidationRule(),
+            'email'           => AuthRules::getEmailValidationRule(),
             'activation_code' => AuthRules::getActivationCodeValidationRule(),
         ]);
 
-        $email = $request->input('email');
+        $email          = $request->input('email');
         $activationCode = $request->input('activation_code');
 
         try {
@@ -151,13 +153,13 @@ class AuthController extends BaseController
     public function change(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'email' => AuthRules::getEmailValidationRule(),
-            'reset_code' => AuthRules::getResetCodeValidationRule(),
+            'email'        => AuthRules::getEmailValidationRule(),
+            'reset_code'   => AuthRules::getResetCodeValidationRule(),
             'new_password' => AuthRules::getPasswordValidationRule(),
         ]);
 
-        $email = $request->input('email');
-        $resetCode = $request->input('reset_code');
+        $email       = $request->input('email');
+        $resetCode   = $request->input('reset_code');
         $newPassword = $request->input('new_password');
 
         try {

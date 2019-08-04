@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Exceptions\IllegalArgumentException;
 use App\Mail\Activation;
 use App\Mail\Reset;
 use App\User;
-use Illuminate\Support\Facades\Date;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthService implements AuthServiceInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws IllegalArgumentException
      */
@@ -23,13 +25,13 @@ class AuthService implements AuthServiceInterface
     {
         $validator = Validator::make(
             [
-                'name' => $name,
-                'email' => $email,
+                'name'     => $name,
+                'email'    => $email,
                 'password' => $password,
             ],
             [
-                'name' => AuthRules::getNameValidationRule(),
-                'email' => AuthRules::getEmailValidationRule(),
+                'name'     => AuthRules::getNameValidationRule(),
+                'email'    => AuthRules::getEmailValidationRule(),
                 'password' => AuthRules::getPasswordValidationRule(),
             ]
         );
@@ -44,13 +46,13 @@ class AuthService implements AuthServiceInterface
             throw new IllegalArgumentException(sprintf('User with email %s already exists.', $email));
         }
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
+        $user           = new User();
+        $user->name     = $name;
+        $user->email    = $email;
         $user->password = Hash::make($password);
-        $user->active = false;
+        $user->active   = false;
 
-        $activationCode = $this->generatePassword();
+        $activationCode       = $this->generatePassword();
         $user->activationCode = Hash::make($activationCode);
 
         // Test task implementation uses synchronous mailer for simplification
@@ -67,7 +69,7 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws IllegalArgumentException
      */
@@ -75,11 +77,11 @@ class AuthService implements AuthServiceInterface
     {
         $validator = Validator::make(
             [
-                'email' => $email,
+                'email'           => $email,
                 'activation_code' => $activationCode,
             ],
             [
-                'email' => AuthRules::getEmailValidationRule(),
+                'email'           => AuthRules::getEmailValidationRule(),
                 'activation_code' => AuthRules::getActivationCodeValidationRule(),
             ]
         );
@@ -110,7 +112,7 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws IllegalArgumentException
      */
@@ -118,11 +120,11 @@ class AuthService implements AuthServiceInterface
     {
         $validator = Validator::make(
             [
-                'email' => $email,
+                'email'    => $email,
                 'password' => $password,
             ],
             [
-                'email' => AuthRules::getEmailValidationRule(),
+                'email'    => AuthRules::getEmailValidationRule(),
                 'password' => AuthRules::getPasswordValidationRule(),
             ]
         );
@@ -149,7 +151,7 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws IllegalArgumentException
      */
@@ -175,7 +177,7 @@ class AuthService implements AuthServiceInterface
             throw new IllegalArgumentException(sprintf('User with email %s does not exist.', $email));
         }
 
-        $resetCode = $this->generatePassword();
+        $resetCode       = $this->generatePassword();
         $user->resetCode = Hash::make($resetCode);
 
         $user->resetCodeExpiration = Date::now()
@@ -196,7 +198,7 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws IllegalArgumentException
      */
@@ -204,13 +206,13 @@ class AuthService implements AuthServiceInterface
     {
         $validator = Validator::make(
             [
-                'email' => $email,
-                'resetCode' => $resetCode,
+                'email'       => $email,
+                'resetCode'   => $resetCode,
                 'newPassword' => $newPassword,
             ],
             [
-                'email' => AuthRules::getEmailValidationRule(),
-                'resetCode' => AuthRules::getResetCodeValidationRule(),
+                'email'       => AuthRules::getEmailValidationRule(),
+                'resetCode'   => AuthRules::getResetCodeValidationRule(),
                 'newPassword' => AuthRules::getPasswordValidationRule(),
             ]
         );
@@ -244,7 +246,7 @@ class AuthService implements AuthServiceInterface
     /**
      * Helper method to create a JWT token.
      *
-     * @param  \App\User $user
+     * @param \App\User $user
      *
      * @return string
      */
@@ -254,14 +256,14 @@ class AuthService implements AuthServiceInterface
             'iss' => env('JWT_ISSUER'), // Issuer of the token
             'sub' => $user->id, // Subject of the token
             'iat' => time(), // Time when JWT was issued.
-            'exp' => time() + env('JWT_TOKEN_EXPIRATION_PERIOD') // Expiration time
+            'exp' => time() + env('JWT_TOKEN_EXPIRATION_PERIOD'), // Expiration time
         ];
 
         return JWT::encode($payload, env('JWT_SECRET'));
     }
 
     /**
-     * Generates random password of allowed symbols and range of length
+     * Generates random password of allowed symbols and range of length.
      *
      * @return string
      *
@@ -269,7 +271,7 @@ class AuthService implements AuthServiceInterface
      */
     protected function generatePassword(): string
     {
-        $count = mb_strlen(AuthRules::PASSWORD_ALLOWED_CHARS);
+        $count  = mb_strlen(AuthRules::PASSWORD_ALLOWED_CHARS);
         $length = random_int(AuthRules::PASSWORD_MAX_LENGTH, AuthRules::PASSWORD_MAX_LENGTH);
 
         for ($i = 0, $password = ''; $i < $length; $i++) {

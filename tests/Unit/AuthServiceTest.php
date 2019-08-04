@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\Exceptions\IllegalArgumentException;
@@ -7,11 +9,11 @@ use App\Mail\Activation;
 use App\Mail\Reset;
 use App\Services\AuthService;
 use App\User;
+use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Tests\TestCase;
-use Firebase\JWT\JWT;
 
 class AuthServiceTest extends TestCase
 {
@@ -20,10 +22,10 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCanRegister()
+    public function testCanRegister(): void
     {
-        $name = 'TestUser';
-        $email = 'TestUser@somedomain.com';
+        $name     = 'TestUser';
+        $email    = 'TestUser@somedomain.com';
         $password = 'pS9#$%^&*()-.>/';
 
         $authService = new AuthService();
@@ -43,14 +45,14 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotRegisterWithNotValidArguments()
+    public function testCannotRegisterWithNotValidArguments(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The name must be at least 2 characters. ' .
             'The email must be a valid email address. The password may not be greater than 16 characters.');
 
-        $name = 'T';
-        $email = 'TestUser[nodog]somedomain.com';
+        $name     = 'T';
+        $email    = 'TestUser[nodog]somedomain.com';
         $password = 'somepassword12!@#$^&';
 
         $authService = new AuthService();
@@ -63,15 +65,15 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotRegisterWithExistingEmail()
+    public function testCannotRegisterWithExistingEmail(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUser@somedomain.com already exists.');
 
-        $name = 'TestUser';
-        $name2 = 'TestUserSecond';
-        $email = 'TestUser@somedomain.com';
-        $password = 'somepassword';
+        $name      = 'TestUser';
+        $name2     = 'TestUserSecond';
+        $email     = 'TestUser@somedomain.com';
+        $password  = 'somepassword';
         $password2 = 'somepassword2';
 
         $authService = new AuthService();
@@ -85,15 +87,15 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCanActivate()
+    public function testCanActivate(): void
     {
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $user->password = Hash::make('somepassword');
-        $activationCode = 'qWer1%*';
+        $user                 = new User();
+        $user->name           = 'TestUser';
+        $user->email          = 'TestUser@somedomain.com';
+        $user->password       = Hash::make('somepassword');
+        $activationCode       = 'qWer1%*';
         $user->activationCode = Hash::make($activationCode);
-        $user->active = false;
+        $user->active         = false;
         $user->save();
 
         $email = 'TestUser@somedomain.com';
@@ -108,18 +110,18 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotActivateWithNotValidArguments()
+    public function testCannotActivateWithNotValidArguments(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The activation code format is invalid.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $user->password = Hash::make('somepassword');
-        $activationCode = '123"4~';
+        $user                 = new User();
+        $user->name           = 'TestUser';
+        $user->email          = 'TestUser@somedomain.com';
+        $user->password       = Hash::make('somepassword');
+        $activationCode       = '123"4~';
         $user->activationCode = Hash::make($activationCode);
-        $user->active = false;
+        $user->active         = false;
         $user->save();
 
         $email = 'TestUserNotExist[notdog]somedomain[notdot]com';
@@ -132,18 +134,18 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotActivateWhenEmailNotExist()
+    public function testCannotActivateWhenEmailNotExist(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExist@somedomain.com does not exist.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $user->password = Hash::make('somepassword');
-        $activationCode = 'qWer1%*';
+        $user                 = new User();
+        $user->name           = 'TestUser';
+        $user->email          = 'TestUser@somedomain.com';
+        $user->password       = Hash::make('somepassword');
+        $activationCode       = 'qWer1%*';
         $user->activationCode = Hash::make($activationCode);
-        $user->active = false;
+        $user->active         = false;
         $user->save();
 
         $email = 'TestUserNotExist@somedomain.com';
@@ -156,18 +158,18 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotActivateActiveUser()
+    public function testCannotActivateActiveUser(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User already activated.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $user->password = Hash::make('somepassword');
-        $activationCode = 'qWer1%*';
+        $user                 = new User();
+        $user->name           = 'TestUser';
+        $user->email          = 'TestUser@somedomain.com';
+        $user->password       = Hash::make('somepassword');
+        $activationCode       = 'qWer1%*';
         $user->activationCode = Hash::make($activationCode);
-        $user->active = true;
+        $user->active         = true;
         $user->save();
 
         $email = 'TestUser@somedomain.com';
@@ -180,18 +182,18 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotActivateIncorrectCode()
+    public function testCannotActivateIncorrectCode(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Activation code is incorrect.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $user->password = Hash::make('somepassword');
-        $activationCode = 'qWer1%*';
+        $user                 = new User();
+        $user->name           = 'TestUser';
+        $user->email          = 'TestUser@somedomain.com';
+        $user->password       = Hash::make('somepassword');
+        $activationCode       = 'qWer1%*';
         $user->activationCode = Hash::make($activationCode);
-        $user->active = false;
+        $user->active         = false;
         $user->save();
 
         $email = 'TestUser@somedomain.com';
@@ -204,14 +206,14 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCanAuthenticate()
+    public function testCanAuthenticate(): void
     {
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 's0m$Pa$$wo4d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $email = 'TestUser@somedomain.com';
@@ -221,7 +223,7 @@ class AuthServiceTest extends TestCase
         $jwtToken = $authService->authenticate($email, $password);
 
         $this->assertNotEmpty($jwtToken);
-        $decodedJwtToken = JWT::decode($jwtToken, env('JWT_SECRET'), array('HS256'));
+        $decodedJwtToken = JWT::decode($jwtToken, env('JWT_SECRET'), ['HS256']);
         $this->assertEquals('Cordial', $decodedJwtToken->iss);
         $this->assertEquals($user->id, $decodedJwtToken->sub);
         $this->assertEquals(env('JWT_TOKEN_EXPIRATION_PERIOD'), $decodedJwtToken->exp - $decodedJwtToken->iat);
@@ -230,17 +232,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotAuthenticateNotExistingUser()
+    public function testCannotAuthenticateNotExistingUser(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 's0m$Pa$$wo4d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $authService = new AuthService();
@@ -251,17 +253,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotAuthenticateNotActiveUser()
+    public function testCannotAuthenticateNotActiveUser(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUser@somedomain.com is not active.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 's0m$Pa$$wo4d';
         $user->password = Hash::make($password);
-        $user->active = false;
+        $user->active   = false;
         $user->save();
 
         $authService = new AuthService();
@@ -272,17 +274,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotAuthenticateWithIncorrectPassword()
+    public function testCannotAuthenticateWithIncorrectPassword(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Password is incorrect.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 's0m$Pa$$wo4d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $authService = new AuthService();
@@ -293,17 +295,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotAuthenticateWithNotValidArguments()
+    public function testCannotAuthenticateWithNotValidArguments(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The password format is invalid.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 's0m$Pa$$wo4d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $authService = new AuthService();
@@ -314,14 +316,14 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCanReset()
+    public function testCanReset(): void
     {
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 'som4paSSw0%d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 'som4paSSw0%d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $email = 'TestUser@somedomain.com';
@@ -340,17 +342,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotResetNotExistingUser()
+    public function testCannotResetNotExistingUser(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 'som4paSSw0%d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 'som4paSSw0%d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $authService = new AuthService();
@@ -363,17 +365,17 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotResetWithNotValidArguments()
+    public function testCannotResetWithNotValidArguments(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 'som4paSSw0%d';
+        $user           = new User();
+        $user->name     = 'TestUser';
+        $user->email    = 'TestUser@somedomain.com';
+        $password       = 'som4paSSw0%d';
         $user->password = Hash::make($password);
-        $user->active = true;
+        $user->active   = true;
         $user->save();
 
         $authService = new AuthService();
@@ -386,23 +388,23 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCanChange()
+    public function testCanChange(): void
     {
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
-        $user->password = Hash::make($password);
-        $user->active = true;
-        $resetCode = 'someRe$etc0de';
-        $user->resetCode = Hash::make($resetCode);
+        $user                      = new User();
+        $user->name                = 'TestUser';
+        $user->email               = 'TestUser@somedomain.com';
+        $password                  = 's0m$Pa$$wo4d';
+        $user->password            = Hash::make($password);
+        $user->active              = true;
+        $resetCode                 = 'someRe$etc0de';
+        $user->resetCode           = Hash::make($resetCode);
         $user->resetCodeExpiration = '2100-01-01 00:00:00';
         $user->save();
 
         $authService = new AuthService();
 
         $newPassword = 'newpa$$wo4d';
-        $user = $authService->change('TestUser@somedomain.com', $resetCode, $newPassword);
+        $user        = $authService->change('TestUser@somedomain.com', $resetCode, $newPassword);
 
         $this->assertTrue(Hash::check($newPassword, $user->password));
     }
@@ -410,19 +412,19 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotChangeNotExistingUser()
+    public function testCannotChangeNotExistingUser(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
-        $user->password = Hash::make($password);
-        $user->active = true;
-        $resetCode = 'someRe$etc0de';
-        $user->resetCode = Hash::make($resetCode);
+        $user                      = new User();
+        $user->name                = 'TestUser';
+        $user->email               = 'TestUser@somedomain.com';
+        $password                  = 's0m$Pa$$wo4d';
+        $user->password            = Hash::make($password);
+        $user->active              = true;
+        $resetCode                 = 'someRe$etc0de';
+        $user->resetCode           = Hash::make($resetCode);
         $user->resetCodeExpiration = '2100-01-01 00:00:00';
         $user->save();
 
@@ -435,19 +437,19 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotChangeIfResetCodeIsIncorrect()
+    public function testCannotChangeIfResetCodeIsIncorrect(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Reset code is incorrect.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
-        $user->password = Hash::make($password);
-        $user->active = true;
-        $resetCode = 'someRe$etc0de';
-        $user->resetCode = Hash::make($resetCode);
+        $user                      = new User();
+        $user->name                = 'TestUser';
+        $user->email               = 'TestUser@somedomain.com';
+        $password                  = 's0m$Pa$$wo4d';
+        $user->password            = Hash::make($password);
+        $user->active              = true;
+        $resetCode                 = 'someRe$etc0de';
+        $user->resetCode           = Hash::make($resetCode);
         $user->resetCodeExpiration = '2100-01-01 00:00:00';
         $user->save();
 
@@ -460,19 +462,19 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotChangeIfResetCodeIsExpired()
+    public function testCannotChangeIfResetCodeIsExpired(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Reset code is expired.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
-        $user->password = Hash::make($password);
-        $user->active = true;
-        $resetCode = 'someRe$etc0de';
-        $user->resetCode = Hash::make($resetCode);
+        $user                      = new User();
+        $user->name                = 'TestUser';
+        $user->email               = 'TestUser@somedomain.com';
+        $password                  = 's0m$Pa$$wo4d';
+        $user->password            = Hash::make($password);
+        $user->active              = true;
+        $resetCode                 = 'someRe$etc0de';
+        $user->resetCode           = Hash::make($resetCode);
         $user->resetCodeExpiration = '2000-01-01 00:00:00';
         $user->save();
 
@@ -485,19 +487,19 @@ class AuthServiceTest extends TestCase
     /**
      * @test
      */
-    public function testCannotChangeWithNotValidArguments()
+    public function testCannotChangeWithNotValidArguments(): void
     {
         $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The reset code format is invalid. The new password format is invalid.');
 
-        $user = new User();
-        $user->name = 'TestUser';
-        $user->email = 'TestUser@somedomain.com';
-        $password = 's0m$Pa$$wo4d';
-        $user->password = Hash::make($password);
-        $user->active = true;
-        $resetCode = 'someRe$etc0de';
-        $user->resetCode = Hash::make($resetCode);
+        $user                      = new User();
+        $user->name                = 'TestUser';
+        $user->email               = 'TestUser@somedomain.com';
+        $password                  = 's0m$Pa$$wo4d';
+        $user->password            = Hash::make($password);
+        $user->active              = true;
+        $resetCode                 = 'someRe$etc0de';
+        $user->resetCode           = Hash::make($resetCode);
         $user->resetCodeExpiration = '2000-01-01 00:00:00';
         $user->save();
 

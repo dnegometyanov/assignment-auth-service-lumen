@@ -1,4 +1,8 @@
-<?php namespace App\Mail;
+<?php
+
+declare(strict_types=1);
+
+namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -6,7 +10,8 @@ use Illuminate\Queue\SerializesModels;
 
 class Reset extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /** @var string the address to send the email */
     protected $toAddress;
@@ -19,10 +24,8 @@ class Reset extends Mailable
      *
      * @param string $toAddress the address to send the email
      * @param string $resetCode
-     *
-     * @return void
      */
-    public function __construct(string $toAddress,string $resetCode)
+    public function __construct(string $toAddress, string $resetCode)
     {
         $this->toAddress = $toAddress;
         $this->resetCode = $resetCode;

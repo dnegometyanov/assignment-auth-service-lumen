@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\User;
@@ -7,7 +9,7 @@ use App\User;
 interface AuthServiceInterface
 {
     /**
-     * Registers user and sends activation email
+     * Registers user and sends activation email.
      *
      * @param string $name
      * @param string $email
@@ -18,7 +20,7 @@ interface AuthServiceInterface
     public function register(string $name, string $email, string $password): User;
 
     /**
-     * Activates used using activation code from email
+     * Activates used using activation code from email.
      *
      * @param string $email
      * @param string $activationCode
@@ -28,7 +30,7 @@ interface AuthServiceInterface
     public function activate(string $email, string $activationCode): User;
 
     /**
-     * Checks user credentials and returns JWT token
+     * Checks user credentials and returns JWT token.
      *
      * @param string $email
      * @param string $password
@@ -38,7 +40,7 @@ interface AuthServiceInterface
     public function authenticate(string $email, string $password): string;
 
     /**
-     * Sends reset password code to email
+     * Sends reset password code to email.
      *
      * @param string $email
      *
@@ -47,7 +49,7 @@ interface AuthServiceInterface
     public function reset(string $email): User;
 
     /**
-     * Checks reset code from email and sets new password for user
+     * Checks reset code from email and sets new password for user.
      *
      * @param string $email
      * @param string $resetCode

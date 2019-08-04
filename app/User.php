@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Illuminate\Auth\Authenticatable;
-use Laravel\Lumen\Auth\Authorizable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Lumen\Auth\Authorizable;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable;
+    use Authenticatable;
+    use Authorizable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +21,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'active', 'resetCodeExpiration'
+        'name', 'email', 'active', 'resetCodeExpiration',
     ];
 
     /**
@@ -33,12 +36,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /**
      * Get the user's active property.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return bool
      */
     public function getActiveAttribute($value): bool
     {
-        return (bool)$value;
+        return (bool) $value;
     }
 }

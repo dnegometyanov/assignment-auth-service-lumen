@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
@@ -9,11 +11,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      *
-     * @return void
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function register()
+    public function register(): void
     {
         // Init mailer
         $this->app->singleton(

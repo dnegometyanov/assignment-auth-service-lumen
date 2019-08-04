@@ -1,29 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\User;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
-        //
     }
 
     /**
      * Boot the authentication services for the application.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // Here you may define how you wish users to be authenticated for your Lumen
         // application. The callback which receives the incoming request instance

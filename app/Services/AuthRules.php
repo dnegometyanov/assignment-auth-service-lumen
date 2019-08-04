@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 class AuthRules
@@ -10,7 +12,7 @@ class AuthRules
     const PASSWORD_MIN_LENGTH = 6;
     const PASSWORD_MAX_LENGTH = 16;
 
-    const PASSWORD_ALLOWED_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-+*=/.,{}<>?;';
+    const PASSWORD_ALLOWED_CHARS     = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-+*=/.,{}<>?;';
     const PASSWORD_VALIDATION_REGEXP = '/^[a-zA-Z0-9!@#$%^&*()\-+*=\/.,{}<>?]+$/';
 
     /**

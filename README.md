@@ -26,3 +26,5 @@
  - Migrate both of them `php artisan migrate` and `php artisan migrate --env="testing"`
  - Use `./vendor/bin/phpunit` to run unit tests (`AuthService` is covered)
  - Exported Postman collection is in `Cordial-Auth-App.postman_collection.json`
+ - Install https://github.com/FriendsOfPHP/PHP-CS-Fixer, copy `.php_cs.dist` to `.php_cs` and use `php-cs-fixer fix` to fix code style
+ - Copy `.phpstan.neon.dist` to `.phpstan.neon` and use `./vendor/bin/phpstan analyse` for static analysis

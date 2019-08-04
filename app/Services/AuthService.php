@@ -181,7 +181,7 @@ class AuthService implements AuthServiceInterface
         $user->resetCode = Hash::make($resetCode);
 
         $user->resetCodeExpiration = Date::now()
-            ->addMinute(env('ACTIVATION_CODE_EXPIRATION_PERIOD_MINUTES'))
+            ->addMinutes((int) env('ACTIVATION_CODE_EXPIRATION_PERIOD_MINUTES'))
             ->format('Y-m-d H:i:s');
 
         // Test task implementation uses synchronous mailer for simplification

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Exceptions\IllegalArgumentException;
 use App\Mail\Activation;
 use App\Mail\Reset;
 use App\Services\AuthService;
@@ -44,6 +45,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotRegisterWithNotValidArguments()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The name must be at least 2 characters. ' .
             'The email must be a valid email address. The password may not be greater than 16 characters.');
 
@@ -63,6 +65,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotRegisterWithExistingEmail()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUser@somedomain.com already exists.');
 
         $name = 'TestUser';
@@ -107,6 +110,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotActivateWithNotValidArguments()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The activation code format is invalid.');
 
         $user = new User();
@@ -130,6 +134,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotActivateWhenEmailNotExist()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExist@somedomain.com does not exist.');
 
         $user = new User();
@@ -153,6 +158,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotActivateActiveUser()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User already activated.');
 
         $user = new User();
@@ -176,6 +182,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotActivateIncorrectCode()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Activation code is incorrect.');
 
         $user = new User();
@@ -225,6 +232,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotAuthenticateNotExistingUser()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
         $user = new User();
@@ -245,6 +253,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotAuthenticateNotActiveUser()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUser@somedomain.com is not active.');
 
         $user = new User();
@@ -265,6 +274,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotAuthenticateWithIncorrectPassword()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Password is incorrect.');
 
         $user = new User();
@@ -285,6 +295,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotAuthenticateWithNotValidArguments()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The password format is invalid.');
 
         $user = new User();
@@ -331,6 +342,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotResetNotExistingUser()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
         $user = new User();
@@ -353,6 +365,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotResetWithNotValidArguments()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address.');
 
         $user = new User();
@@ -399,6 +412,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotChangeNotExistingUser()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('User with email TestUserNotExisting@somedomain.com does not exist.');
 
         $user = new User();
@@ -423,6 +437,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotChangeIfResetCodeIsIncorrect()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Reset code is incorrect.');
 
         $user = new User();
@@ -447,6 +462,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotChangeIfResetCodeIsExpired()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('Reset code is expired.');
 
         $user = new User();
@@ -471,6 +487,7 @@ class AuthServiceTest extends TestCase
      */
     public function testCannotChangeWithNotValidArguments()
     {
+        $this->expectException(IllegalArgumentException::class);
         $this->expectExceptionMessage('The email must be a valid email address. The reset code format is invalid. The new password format is invalid.');
 
         $user = new User();

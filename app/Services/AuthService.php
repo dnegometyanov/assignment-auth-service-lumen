@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\IllegalArgumentException;
 use App\Mail\Activation;
 use App\Mail\Reset;
 use App\User;
@@ -16,7 +17,7 @@ class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      *
-     * @throws \Exception
+     * @throws IllegalArgumentException
      */
     public function register(string $name, string $email, string $password): User
     {
@@ -34,13 +35,13 @@ class AuthService implements AuthServiceInterface
         );
 
         if ($validator->fails()) {
-            throw new \Exception(implode(' ', $validator->errors()->all()));
+            throw new IllegalArgumentException(implode(' ', $validator->errors()->all()));
         }
 
         $existingUser = User::where('email', $email)->first();
 
         if (null !== $existingUser) {
-            throw new \Exception(sprintf('User with email %s already exists.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s already exists.', $email));
         }
 
         $user = new User();
@@ -68,7 +69,7 @@ class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      *
-     * @throws \Exception
+     * @throws IllegalArgumentException
      */
     public function activate(string $email, string $activationCode): User
     {
@@ -84,21 +85,21 @@ class AuthService implements AuthServiceInterface
         );
 
         if ($validator->fails()) {
-            throw new \Exception(implode(' ', $validator->errors()->all()));
+            throw new IllegalArgumentException(implode(' ', $validator->errors()->all()));
         }
 
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            throw new \Exception(sprintf('User with email %s does not exist.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s does not exist.', $email));
         }
 
         if (true === $user->active) {
-            throw new \Exception('User already activated.');
+            throw new IllegalArgumentException('User already activated.');
         }
 
         if (false === Hash::check($activationCode, $user->activationCode)) {
-            throw new \Exception('Activation code is incorrect.');
+            throw new IllegalArgumentException('Activation code is incorrect.');
         }
 
         $user->active = true;
@@ -111,7 +112,7 @@ class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      *
-     * @throws \Exception
+     * @throws IllegalArgumentException
      */
     public function authenticate(string $email, string $password): string
     {
@@ -127,21 +128,21 @@ class AuthService implements AuthServiceInterface
         );
 
         if ($validator->fails()) {
-            throw new \Exception(implode(' ', $validator->errors()->all()));
+            throw new IllegalArgumentException(implode(' ', $validator->errors()->all()));
         }
 
         $user = User::where('email', $email)->first();
 
         if (true == empty($user)) {
-            throw new \Exception(sprintf('User with email %s does not exist.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s does not exist.', $email));
         }
 
         if (true !== $user->active) {
-            throw new \Exception(sprintf('User with email %s is not active.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s is not active.', $email));
         }
 
         if (false === Hash::check($password, $user->password)) {
-            throw new \Exception(sprintf('Password is incorrect.'));
+            throw new IllegalArgumentException(sprintf('Password is incorrect.'));
         }
 
         return $this->jwt($user);
@@ -150,7 +151,7 @@ class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      *
-     * @throws \Exception
+     * @throws IllegalArgumentException
      */
     public function reset(string $email): User
     {
@@ -164,14 +165,14 @@ class AuthService implements AuthServiceInterface
         );
 
         if ($validator->fails()) {
-            throw new \Exception(implode(' ', $validator->errors()->all()));
+            throw new IllegalArgumentException(implode(' ', $validator->errors()->all()));
         }
 
         // Find the user by email
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            throw new \Exception(sprintf('User with email %s does not exist.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s does not exist.', $email));
         }
 
         $resetCode = $this->generatePassword();
@@ -197,7 +198,7 @@ class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      *
-     * @throws \Exception
+     * @throws IllegalArgumentException
      */
     public function change(string $email, string $resetCode, string $newPassword): User
     {
@@ -215,22 +216,22 @@ class AuthService implements AuthServiceInterface
         );
 
         if ($validator->fails()) {
-            throw new \Exception(implode(' ', $validator->errors()->all()));
+            throw new IllegalArgumentException(implode(' ', $validator->errors()->all()));
         }
 
         // Find the user by email
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            throw new \Exception(sprintf('User with email %s does not exist.', $email));
+            throw new IllegalArgumentException(sprintf('User with email %s does not exist.', $email));
         }
 
         if (false === Hash::check($resetCode, $user->resetCode)) {
-            throw new \Exception('Reset code is incorrect.');
+            throw new IllegalArgumentException('Reset code is incorrect.');
         }
 
         if (Date::create('now') > Date::createFromFormat('Y-m-d H:i:s', $user->resetCodeExpiration)) {
-            throw new \Exception('Reset code is expired.');
+            throw new IllegalArgumentException('Reset code is expired.');
         }
 
         $user->password = Hash::make($newPassword);

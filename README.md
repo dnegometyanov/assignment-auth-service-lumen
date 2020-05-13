@@ -1,4 +1,4 @@
-# Cordial test task
+# Test assignment lumen (laravel) auth service
 
 ## Create authentication REST service.
 ### Service methods:
@@ -21,7 +21,7 @@
  - I've used this article as a starter https://medium.com/tech-tajawal/jwt-authentication-for-lumen-5-6-2376fd38d454
  
 ### Usage
- - Create 2 databases for project and for tests (for example `cordial` and `cordial_test`)
+ - Create 2 databases for project and for tests (for example `auth_service` and `auth_service_test`)
  - Copy `.env.example` to `.env` and `.env.testing.example` to `.env.testing` and set up parameters
  - Migrate both of them `php artisan migrate` and `php artisan migrate --env="testing"`
  - Use `./vendor/bin/phpunit` to run unit tests (`AuthService` is covered)
